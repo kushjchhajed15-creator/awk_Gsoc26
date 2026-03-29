@@ -1,0 +1,113 @@
+---
+title: "AWK Commands Analysis using R"
+author: "KUSHAl CHHAJED"
+output: html_document
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+library(data.table)
+library(ggplot2)
+```
+
+---
+
+##  2]  Preparation of DATASET
+
+
+
+
+```{r}
+
+
+data("diamonds", package = "ggplot2")
+file_path <- file.path(getwd(), "diamonds.csv")
+fwrite(diamonds[1:5, ], file_path)
+```
+
+``` 
+# As mentioned in the description of easy task that " setwd("~/Downloads/")
+
+fwrite(x = diamonds[1:5,], file = "diamonds.csv") "
+and as we can see i have written in this format " file_path <- file.path(getwd(), "diamonds.csv")
+fwrite(diamonds[1:5, ], file_path) " the reason is, it was creating an error to locate the path(file) ! 
+```
+---
+
+##  3] Command 1
+
+
+## Command 1
+
+```{r}
+fread(cmd = "awk -F ',' '{print}' 'diamonds.csv'")
+```
+
+
+
+##  Explanation Part
+
+```
+### Explanation of Command 1
+            
+The AWK command  is:
+
+`awk -F ',' '{print}' diamonds.csv`
+
+- `awk`--> A text-processing tool used to read and manipulate files line by line.
+- `-F ','`-> Specifies that the input file is comma-separated.
+- `{print}`--> Prints each line as it is (equivalent to `{print $0}`).
+- `diamonds.csv`:- Input file.
+
+                __ Functionality__
+This command reads the entire CSV file and prints every row without any modification.
+
+                   __ Result__
+The output is identical to the original dataset.
+```
+
+## Command 2
+
+```{r}
+fread(cmd = "awk -F ',' \"NR>1 {print $1, $2, $7/$1}\" diamonds.csv", fill = TRUE)
+```
+```
+ The ABOVE code is slightly different from the actual code due to WINDOWS-COMPATIBLE VERSION
+ ( fread(cmd = "awk -F ',' '{if(NR > 1) print $1, $2, $7/$1}' 'diamonds.csv'", fill = T) )
+
+```
+
+##  Explanation Part
+
+```
+### Explanation of Command 2
+
+The AWK command  is:
+
+`awk -F ',' '{if(NR > 1) print $1, $2, $7/$1}' diamonds.csv`
+
+- `-F ','`: Specifies comma as the field separator.
+- `NR`: Represents the current row number.
+- `NR > 1`: Skips the header row.
+- `$1`: First column (carat).
+- `$2`: Second column (cut).
+- `$7`: Seventh column (price).
+- `$7/$1`: Calculates price per carat.
+- `print $1, $2, $7/$1`: Outputs selected columns and computed value.
+
+                 __ Functionality __ 
+This command skips the header, selects specific columns, and computes a new value (price per carat).
+
+                    __Result__ 
+A transformed dataset with three columns: carat, cut, and price per carat.
+```
+## 4] Comparison of Commands
+```
+-------------------------------------------
+| Feature         | Command 1 | Command 2 |
+|                 |           |           |
+| Reads full data | Yes       | No        |    -----> just to understand the comparison
+| Skips header    | No        | Yes       |
+| Selects columns | No        | Yes       |
+| Performs calculation| No    | Yes       |
+-------------------------------------------
+```
